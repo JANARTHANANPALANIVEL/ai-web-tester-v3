@@ -1,8 +1,16 @@
 import os
 
 class Config:
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyB-P3HZMwMsfafxmC2dFIBamTYjkVfGXmA")
-    SELENIUM_DRIVER_PATH = os.getenv("SELENIUM_DRIVER_PATH", "J:\chromedriver\chromedriver.exe")
+    # Set your Gemini API key
+    GEMINI_API_KEY = "AIzaSyB-P3HZMwMsfafxmC2dFIBamTYjkVfGXmA"
+    
+    # Set your ChromeDriver path
+    SELENIUM_DRIVER_PATH = r"J:\chromedriver\chromedriver.exe"
+    
+    # Set your ZAP path
+    ZAP_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
+    
+    # Other configurations
     ALLURE_DIR = "reports"
     WAIT_TIMEOUT = 10
-    HEADLESS = False
+    HEADLESS = False  # Set to True if you want to run in headless mode

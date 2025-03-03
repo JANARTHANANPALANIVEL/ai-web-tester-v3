@@ -3,13 +3,13 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
 import json
 import time
 import base64
 from config import Config
 
+# Configure Gemini API
 genai.configure(api_key=Config.GEMINI_API_KEY)
 
 def generate_selenium_code(url):
@@ -31,8 +31,9 @@ def run_selenium_test(url):
     if Config.HEADLESS:
         options.add_argument("--headless=new")
     
+    # Use your ChromeDriver path
     driver = webdriver.Chrome(
-        executable_path=ChromeDriverManager().install(),
+        executable_path=Config.SELENIUM_DRIVER_PATH,
         options=options
     )
     wait = WebDriverWait(driver, Config.WAIT_TIMEOUT)
@@ -56,22 +57,33 @@ def run_selenium_test(url):
 
 def run_performance_test(url):
     try:
-        result = subprocess.check_output(
-            f"lighthouse {url} --output=json --quiet --chrome-flags='--headless=new'",
-            shell=True
+        # Run Lighthouse CLI and save the report to a JSON file
+        report_file = "lighthouse_report.json"
+        subprocess.run(
+            f"lighthouse {url} --output=json --output-path={report_file} --quiet --chrome-flags='--headless=new'",
+            shell=True,
+            check=True
         )
-        return json.loads(result)
+        
+        # Read and parse the JSON report
+        with open(report_file, "r") as f:
+            report_data = json.load(f)
+        
+        return report_data
+    except subprocess.CalledProcessError as e:
+        return {"error": f"Lighthouse failed with exit code {e.returncode}"}
     except Exception as e:
         return {"error": str(e)}
 
 def run_security_test(url):
     try:
+        # Use your ZAP path
         result = subprocess.check_output(
-            f"docker run --rm -v $(pwd):/zap/wrk/ owasp/zap2docker-stable zap-baseline.py "
-            f"-t {url} -J report.json",
+            f'"{Config.ZAP_PATH}" -cmd -quickurl {url} -quickprogress -quickout report.json',
             shell=True
         )
-        return json.loads(result)
+        with open("report.json", "r") as f:
+            return json.load(f)
     except Exception as e:
         return {"error": str(e)}
 
