@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Web Auditor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI-Powered Website Audit</h1>
+        <form action="/start-audit" method="POST">
+            <input type="url" name="url" placeholder="https://example.com" required>
+            <button type="submit">Run Full Audit</button>
+        </form>
+        <div class="disclaimer">
+            <p>Note: Audit may take 2-5 minutes to complete</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audit Results - {{ url }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Audit Results for {{ url }}</h1>
+        
+        {% if results.status == 'running' %}
+            <div class="status running">
+                Audit in progress... (This may take several minutes)
+                <div class="loader"></div>
+            </div>
+        {% elif results.status == 'completed' %}
+            <div class="results-section">
+                <h2>🛠️ Functional Tests</h2>
+                {% if results.results.functional.status == 'passed' %}
+                    <div class="test-result passed">
+                        <h3>✅ All Tests Passed</h3>
+                        <details>
+                            <summary>View Generated Test Code</summary>
+                            <pre><code>{{ results.results.functional.output }}</code></pre>
+                        </details>
+                    </div>
+                {% else %}
+                    <div class="test-result failed">
+                        <h3>❌ Tests Failed</h3>
+                        <p class="error-message">{{ results.results.functional.error }}</p>
+                        <img src="data:image/png;base64,{{ results.results.functional.screenshot }}" 
+                             alt="Error screenshot" class="screenshot">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="results-section">
+                <h2>📈 Performance Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <h3>Performance Score</h3>
+                        <p class="score">{{ results.results.performance.categories.performance.score * 100 | round(1) }}%</p>
+                    </div>
+                    <div class="metric">
+                        <h3>First Contentful Paint</h3>
+                        <p>{{ results.results.performance.audits['first-contentful-paint'].displayValue }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <h2>🔒 Security Findings</h2>
+                <div class="security-findings">
+                    <div class="finding {% if results.results.security.site|length == 0 %}passed{% else %}warning{% endif %}">
+                        <h3>OWASP ZAP Results</h3>
+                        {% if results.results.security.site|length == 0 %}
+                            <p>✅ No critical issues found</p>
+                        {% else %}
+                            <ul>
+                                {% for alert in results.results.security.site %}
+                                    <li>[{{ alert.riskcode }}] {{ alert.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="status error">Error: {{ results.message }}</div>
+        {% endif %}
+    </div>
+    <script>
+        {% if results.status == 'running' %}
+            setTimeout(() => location.reload(), 10000);
+        {% endif %}
+    </script>
+</body>
+</html>
