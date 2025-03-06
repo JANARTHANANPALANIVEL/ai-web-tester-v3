@@ -8,6 +8,7 @@ import json
 import time
 import base64
 from config import Config
+from selenium.webdriver.chrome.service import Service
 
 # Configure Gemini API
 genai.configure(api_key=Config.GEMINI_API_KEY)
@@ -32,10 +33,8 @@ def run_selenium_test(url):
         options.add_argument("--headless=new")
     
     # Use your ChromeDriver path
-    driver = webdriver.Chrome(
-        executable_path=Config.SELENIUM_DRIVER_PATH,
-        options=options
-    )
+    service = Service("J:/chromedriver/chromedriver.exe")
+    driver = webdriver.Chrome(service=service)
     wait = WebDriverWait(driver, Config.WAIT_TIMEOUT)
     
     try:

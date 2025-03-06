@@ -3,7 +3,7 @@ from ai_test_engine import run_full_audit
 import threading
 import time
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 app.config.from_object('config')
 
 # In-memory storage for results
@@ -41,6 +41,8 @@ def run_audit_task(url):
             'status': 'error',
             'message': str(e)
         }
+        
+        
 
 if __name__ == '__main__':
     app.run(debug=True)
