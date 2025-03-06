@@ -3,7 +3,7 @@ from ai_test_engine import run_full_audit
 import threading
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.config.from_object('config')
 
 # In-memory storage for results
